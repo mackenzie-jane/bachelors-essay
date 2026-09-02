@@ -9,7 +9,7 @@ load_dotenv()
 
 client = vision.ImageAnnotatorClient()
 
-with open("test_image_2.jpg", "rb") as image_file:
+with open("image_samples/test_image_2.jpg", "rb") as image_file:
     content = image_file.read()
 
 image = vision.Image(content=content)

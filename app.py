@@ -5,7 +5,7 @@
 # TO run: python app.py, and then in a separate terminal: curl -X POST -F "audio=@audio_samples/AUDIONAME.mp3" http://127.0.0.1:5000/transcribe
 
 from flask import Flask, request, jsonify
-from test_assemblyai import transcribe_audio
+from audio_pipeline import transcribe_audio
 import os
 
 app = Flask(__name__)
