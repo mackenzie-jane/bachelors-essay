@@ -9,7 +9,7 @@
 # cat_audio.mp3 - { "language": "en", "text": "Where's my cat?" }
 
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv # reads .env file
 import assemblyai as aai
 from google.cloud import translate_v2 as translate
 
@@ -26,12 +26,14 @@ def transcribe_audio(file_path):
 
     detected_language = transcript.json_response["language_code"]
 
+    # translate the language
     translation = translate_client.translate(
         transcript.text,
         target_language="en",
         format_="text"
     )
 
+    # clean JSON return
     return{
         "text": transcript.text,
         "language": transcript.json_response["language_code"],
