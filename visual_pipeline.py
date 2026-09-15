@@ -10,11 +10,14 @@
 import os
 from dotenv import load_dotenv # reads .env file
 from google.cloud import vision
+from google.cloud import translate_v2 as translate
 
 load_dotenv() 
 
 client = vision.ImageAnnotatorClient()
+translate_client = translate.Client()
 
+# function to detect and translate text
 def extract_text(file_path):
     with open(file_path, "rb") as image_file:
         content = image_file.read()
@@ -24,16 +27,43 @@ def extract_text(file_path):
     texts = response.text_annotations
 
     if response.error.message:
-        return {"text": None, "error": response.error.message}
-    if texts:
-        return {"text": texts[0].description}
-    else: 
-        return {"text": None, "message": "No text detected in this image"}
+        return {
+            "text": None, 
+            "language": None,
+            "translation": None,
+            "error": response.error.message
+        }
+    if not texts: 
+        return {
+            "text": None, 
+            "language": None,
+            "translation": None,
+            "message": "No text detected in this image"
+        }
+    
+    detected_text = texts[0].description
+    detected_language = texts[0].locale # vision AI automatically detects the language
+    
+    # translate the language
+    translation = translate_client.translate(
+        detected_text,
+        target_language="en",
+        format_="text"
+    )
+    
+    # clean JSON return
+    return{
+        "text": detected_text,
+        "language": detected_language,
+        "translation": translation["translatedText"]
+    }
 
 def print_clean(result):
-    print(result.get("text", ""))
+    print("Text: " + result.get("text", ""))
+    print("Language: " + result.get("language", ""))
+    print("Translation: " + result.get("translation", ""))
 
 if __name__ == "__main__":
-    result = extract_text("image_samples/test_image_2.jpg")
+    result = extract_text("image_samples/arabic_text.jpeg")
     print_clean(result)
-    #print(result)
+    print(result)

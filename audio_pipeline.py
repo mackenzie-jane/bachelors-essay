@@ -18,7 +18,7 @@ aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
 translate_client = translate.Client()
 
 
-# function to transcribe audio 
+# function to transcribe and translate audio 
 def transcribe_audio(file_path):
     transcriber = aai.Transcriber()
     config = aai.TranscriptionConfig(language_detection=True)
@@ -40,8 +40,6 @@ def transcribe_audio(file_path):
         "translation": translation["translatedText"]
     }
 
-
-# Lets you still test this file directly, same as before
 if __name__ == "__main__":
     result = transcribe_audio("audio_samples/spanish_audio.mp3")
     print(result)

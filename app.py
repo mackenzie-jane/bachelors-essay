@@ -6,7 +6,7 @@
 # TO run: python app.py
 # Then in a separate terminal: 
 # AUDIO: curl -X POST -F "audio=@audio_samples/AUDIONAME.mp3" http://127.0.0.1:5000/transcribe
-# IMAGE: curl -X POST -F "image=@image_samples/IMAGENAME.mp3" http://127.0.0.1:5000/extract-text
+# IMAGE: curl -X POST -F "image=@image_samples/IMAGENAME.jpg" http://127.0.0.1:5000/extract-text
 
 from flask import Flask, request, jsonify
 from audio_pipeline import transcribe_audio
