@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Language Detection PoC</title>
+</head>
+<body>
+  <h1>Language Detection and Translation</h1>
+
+  <h2>Audio</h2>
+  <input type="file" id="audioFile" accept="audio/*">
+  <button onclick="submitAudio()">Transcribe</button>
+
+  <h2>Image</h2>
+  <input type="file" id="imageFile" accept="image/*">
+  <button onclick="submitImage()">Extract Text</button>
+
+  <h2>Result</h2>
+  <pre id="result">Nothing yet.</pre>
+
+  <script>
+    async function submitAudio() {
+      const file = document.getElementById("audioFile").files[0];
+      if (!file) return alert("Choose an audio file first.");
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      const res = await fetch("/transcribe", { method: "POST", body: formData });
+      const data = await res.json();
+      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function submitImage() {
+      const file = document.getElementById("imageFile").files[0];
+      if (!file) return alert("Choose an image file first.");
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch("/extract-text", { method: "POST", body: formData });
+      const data = await res.json();
+      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>

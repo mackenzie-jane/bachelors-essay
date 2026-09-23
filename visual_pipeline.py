@@ -63,7 +63,13 @@ def print_clean(result):
     print("Language: " + result.get("language", ""))
     print("Translation: " + result.get("translation", ""))
 
-if __name__ == "__main__":
-    result = extract_text("image_samples/arabic_text.jpeg")
+def test_cases(final_file):
+    result = extract_text(final_file)
     print_clean(result)
     print(result)
+
+if __name__ == "__main__":
+    #test_cases("image_samples/test_image_2.jpg")
+    #test_cases("image_samples/french_text.jpeg")
+    test_cases("image_samples/arabic_text.jpeg")
+    

@@ -8,7 +8,7 @@
 # AUDIO: curl -X POST -F "audio=@audio_samples/AUDIONAME.mp3" http://127.0.0.1:5000/transcribe
 # IMAGE: curl -X POST -F "image=@image_samples/IMAGENAME.jpg" http://127.0.0.1:5000/extract-text
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from audio_pipeline import transcribe_audio
 from visual_pipeline import extract_text
 import os
@@ -52,6 +52,9 @@ def extract_text_endpoint():
     os.remove(temp_path) # clean up after processing
     return jsonify(result)
 
-
+@app.route("/")
+def home():
+    return render_template("index.html")
+    
 if __name__ == "__main__":
     app.run(debug=True)
