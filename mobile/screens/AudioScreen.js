@@ -18,15 +18,15 @@ import { File } from "expo-file-system";
 import { API_URL } from "../config";
 import { colors } from "../theme";
 
-import ScreenHeader from "./ScreenHeader";
-import LanguageBar from "./LanguageBar";
-import PrimaryButton from "./PrimaryButton";
-import CaptureBox from "./CaptureBox";
-import TextBox from "./TextBox";
-import TextBox2 from "./TextBox2";
+import ScreenHeader from "../components/ScreenHeader";
+import LanguageBar from "../components/LanguageBar";
+import PrimaryButton from "../components/PrimaryButton";
+import CaptureBox from "../components/CaptureBox";
+import TextBox from "../components/TextBox";
+import TextBox2 from "../components/TextBox2";
 import { languageName } from "../languages";
 
-export default function AudioUpload() {
+export default function AudioUpload({ navigation }) {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
   const [recordingUri, setRecordingUri] = useState(null);
@@ -103,7 +103,7 @@ export default function AudioUpload() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ScreenHeader title="Audio Upload" onBack={() => {}} />
+      <ScreenHeader title="Audo Upload" onBack={() => navigation.goBack()} />
       <LanguageBar source={result?.language} target="en" />
 
       <CaptureBox

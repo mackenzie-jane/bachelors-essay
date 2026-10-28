@@ -11,15 +11,15 @@ import { fetch } from "expo/fetch";
 import { File } from "expo-file-system";
 import { API_URL } from "../config";
 
-import ScreenHeader from "./ScreenHeader";
-import LanguageBar from "./LanguageBar";
-import PrimaryButton from "./PrimaryButton";
-import TextBox from "./TextBox";
-import TextBox2 from "./TextBox2";
-import CaptureBox from "./CaptureBox";
+import ScreenHeader from "../components/ScreenHeader";
+import LanguageBar from "../components/LanguageBar";
+import PrimaryButton from "../components/PrimaryButton";
+import TextBox from "../components/TextBox";
+import TextBox2 from "../components/TextBox2";
+import CaptureBox from "../components/CaptureBox";
 import { languageName } from "../languages";
 
-export default function ImageUpload() {
+export default function ImageUpload({ navigation }) {
   const [image, setImage] = useState(null); // the picked image asset
   const [result, setResult] = useState(null); // JSON from Flask
   const [loading, setLoading] = useState(false);
@@ -72,9 +72,8 @@ export default function ImageUpload() {
   // Show the pieces separately
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ScreenHeader title="Image Upload" onBack={() => {}} />
+      <ScreenHeader title="Image Upload" onBack={() => navigation.goBack()} />{" "}
       <LanguageBar source={result?.language} target="en" />
-
       <CaptureBox
         icon="image-outline"
         label="Tap to add an image"
@@ -83,7 +82,6 @@ export default function ImageUpload() {
       >
         {image && <Image source={{ uri: image.uri }} style={styles.preview} />}
       </CaptureBox>
-
       {image && (
         <PrimaryButton
           title="Extract & translate"
