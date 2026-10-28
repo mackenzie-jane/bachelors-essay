@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import {
-  View,
   Text,
   StyleSheet,
-  Button,
   Alert,
   ScrollView,
   ActivityIndicator,
@@ -18,6 +16,15 @@ import {
 import { fetch } from "expo/fetch";
 import { File } from "expo-file-system";
 import { API_URL } from "../config";
+import { colors } from "../theme";
+
+import ScreenHeader from "./ScreenHeader";
+import LanguageBar from "./LanguageBar";
+import PrimaryButton from "./PrimaryButton";
+import CaptureBox from "./CaptureBox";
+import TextBox from "./TextBox";
+import TextBox2 from "./TextBox2";
+import { languageName } from "../languages";
 
 export default function AudioUpload() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -36,7 +43,6 @@ export default function AudioUpload() {
   };
 
   const stopRecording = async () => {
-    // The recording will be available on `audioRecorder.uri`.
     await audioRecorder.stop();
     setRecordingUri(audioRecorder.uri);
   };
@@ -44,12 +50,10 @@ export default function AudioUpload() {
   useEffect(() => {
     (async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync();
-
       if (!status.granted) {
         Alert.alert("Permission to access microphone was denied");
         return;
       }
-
       await setAudioModeAsync({
         playsInSilentMode: true,
         allowsRecording: true,
@@ -57,17 +61,14 @@ export default function AudioUpload() {
     })();
   }, []);
 
-  // Send the recording to Flask
   const uploadAudio = async () => {
     if (!recordingUri) return;
-
     setLoading(true);
     setError(null);
 
     const formData = new FormData();
     formData.append("audio", new File(recordingUri));
 
-    // Give up after 30 seconds
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
 
@@ -77,13 +78,10 @@ export default function AudioUpload() {
         body: formData,
         signal: controller.signal,
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || `Server error: ${response.status}`);
       }
-
       setResult(data);
     } catch (e) {
       setError(
@@ -97,30 +95,41 @@ export default function AudioUpload() {
     }
   };
 
-  // Show the pieces separately
+  const micLabel = recorderState.isRecording
+    ? "Recording… tap to stop"
+    : recordingUri
+      ? "Tap to record again"
+      : "Tap to start recording";
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Language Detector- Audio</Text>
-      <Button
-        title={recorderState.isRecording ? "Stop recording" : "Start recording"}
+      <ScreenHeader title="Audio Upload" onBack={() => {}} />
+      <LanguageBar source={result?.language} target="en" />
+
+      <CaptureBox
+        icon={recorderState.isRecording ? "stop-circle" : "mic-outline"}
+        iconColor={recorderState.isRecording ? colors.error : undefined}
+        label={micLabel}
+        active={recorderState.isRecording}
         onPress={recorderState.isRecording ? stopRecording : record}
+        disabled={loading}
       />
 
       {recordingUri && (
-        <Button title="Transcribe & translate" onPress={uploadAudio} />
+        <PrimaryButton
+          title="Transcribe & translate"
+          onPress={uploadAudio}
+          disabled={loading}
+        />
       )}
+
       {loading && <ActivityIndicator size="large" style={styles.gap} />}
       {error && <Text style={styles.error}>{error}</Text>}
-      {result && <Text selectable>{JSON.stringify(result, null, 2)}</Text>}
       {result && (
-        <View style={styles.results}>
-          <Text style={styles.label}>Detected language</Text>
-          <Text>{result.language ?? "—"}</Text>
-          <Text style={styles.label}>Original text</Text>
-          <Text>{result.text ?? result.message ?? "—"}</Text>
-          <Text style={styles.label}>Translation</Text>
-          <Text>{result.translation ?? "—"}</Text>
-        </View>
+        <>
+          <TextBox label={languageName(result.language)} text={result.text} />
+          <TextBox2 label="English Translation" text={result.translation} />
+        </>
       )}
     </ScrollView>
   );
@@ -128,10 +137,6 @@ export default function AudioUpload() {
 
 const styles = StyleSheet.create({
   container: { padding: 24, paddingTop: 80, alignItems: "stretch", gap: 16 },
-  title: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
-  preview: { width: "100%", height: 250, resizeMode: "contain" },
   gap: { marginTop: 16 },
   error: { color: "red" },
-  results: { gap: 6, marginTop: 8 },
-  label: { fontWeight: "bold", marginTop: 8 },
 });
